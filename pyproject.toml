@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "glyco-csdb2snfg"
+version = "0.1.0"
+description = "Convert CSDB linear notation to SNFG glycan diagrams"
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.9"
+authors = [
+    {name = "yee fan"},
+]
+keywords = ["glycoinformatics", "glycan", "SNFG", "CSDB", "bioinformatics", "carbohydrate"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+dependencies = [
+    "numpy>=1.21",
+    "matplotlib>=3.5",
+    "python-pptx>=0.6.21",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "build",
+    "twine",
+]
+
+[project.scripts]
+csdb2snfg = "csdb2snfg.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/sosyphe/glyco-csdb2snfg"
+Issues = "https://github.com/sosyphe/glyco-csdb2snfg/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
