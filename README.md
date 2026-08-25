@@ -1,5 +1,10 @@
 # csdb2snfg
 
+[![PyPI Version](https://img.shields.io/pypi/v/glyco-csdb2snfg)](https://pypi.org/project/glyco-csdb2snfg)
+[![PyPI Downloads](https://static.pepy.tech/badge/glyco-csdb2snfg)](https://pepy.tech/project/glyco-csdb2snfg)
+[![Bioconda Version](https://img.shields.io/conda/vn/bioconda/glyco-csdb2snfg.svg)](https://anaconda.org/bioconda/glyco-csdb2snfg)
+[![Bioconda Downloads](https://img.shields.io/conda/dn/bioconda/glyco-csdb2snfg.svg)](https://anaconda.org/bioconda/glyco-csdb2snfg)
+
 > Convert [CSDB](https://csdb.glycoscience.ru/) linear notation to SNFG (Symbol Nomenclature for Glycans) diagrams.
 
 ## Features
