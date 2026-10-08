@@ -12,11 +12,11 @@
 - **Parse** CSDB linear strings into structured AST (JSON output)
 - **Render** SNFG diagrams as PNG/SVG images
 - **Export** PowerPoint (PPTX) with vector shapes
-- Supports branching, repeating units (`/n=N/`), modifiers (Me, Ac)
+- Supports branching, repeating units (`/n=N/`, expanded or compact `[unit]n` display), modifiers (Me, Ac)
 
 ### Current Limitations
 
-- Only standard CSDB syntax and `repeat=n` are supported. Fuzzy/XOR alternatives (`<...|...>`, `<<...|...>>`) are **not yet supported**.
+- Only standard CSDB syntax and repeating units (`/n=N/`) are supported. Fuzzy/XOR alternatives (`<...|...>`, `<<...|...>>`) are **not yet supported**.
 - Only **orthogonal (horizontal/vertical) chain layout** is supported. Diagonal or angled linkages are not available.
 
 ## Installation
@@ -27,10 +27,35 @@ From PyPI (stable):
 pip install glyco-csdb2snfg
 ```
 
-From source (development):
+With [uv](https://docs.astral.sh/uv/):
+
+```bash
+# Install as a global CLI tool
+uv tool install glyco-csdb2snfg
+
+# Or run directly without installing
+uvx --from glyco-csdb2snfg csdb2snfg parse -c="-4)βDGlcp(1-4)αDGlcp(1-"
+```
+
+From source:
 
 ```bash
 pip install git+https://github.com/sosyphe/glyco-csdb2snfg.git
+```
+
+### Development (uv)
+
+This project uses [uv](https://docs.astral.sh/uv/) for dependency management (`pyproject.toml` + `uv.lock`).
+
+```bash
+git clone https://github.com/sosyphe/glyco-csdb2snfg.git
+cd glyco-csdb2snfg
+
+# Create .venv and install all dependencies (including dev extras)
+uv sync --extra dev
+
+# Run the CLI inside the project environment
+uv run csdb2snfg --version
 ```
 
 ## Quick Start
@@ -44,6 +69,9 @@ csdb2snfg pptx -c="-4)βDGalp(1-4)βDGalp(1-3)αDGalp(1-" -o output/
 
 # Parse to JSON AST
 csdb2snfg parse -c="-4)βDGlcp(1-4)αDGlcp(1-"
+
+# Repeating unit in compact mode ([unit]n instead of expanding)
+csdb2snfg image -c="-4)βDGalp(1-4)/βDGalp(1-4)/n=3/βDGalp(1-4)αDGlcp(1-" --compact-repeat -o output/
 
 # Batch processing (one CSDB string per line, # for comments)
 csdb2snfg image -f glycans.txt --format png -o output/
@@ -79,7 +107,7 @@ with open("glycans.pptx", "wb") as f:
 
 <img src="https://raw.githubusercontent.com/sosyphe/glyco-csdb2snfg/main/examples/svg/simple_linear.svg" width="400">
 
-**Branched N-Glycan core**
+**Branched unit**
 
 `-4)[βDGalp(1-6)]αDManp(1-4)[βDGalp(1-3)]αDManp(1-4)βDGlcNAcp(1-4)βDGlcNAcp(1-`
 
@@ -90,6 +118,8 @@ with open("glycans.pptx", "wb") as f:
 `-4)βDGalp(1-4)/βDGalp(1-4)/n=3/βDGalp(1-4)αDGlcp(1-`
 
 <img src="https://raw.githubusercontent.com/sosyphe/glyco-csdb2snfg/main/examples/svg/repeating.svg" width="500">
+
+> The image above shows the compact display: the repeat unit is drawn once with an `n=` annotation. The CLI expands the unit N times by default — pass `--compact-repeat` for the compact display (which is the default in the Python API: `draw_snfg(tree, compact_repeat=True)`).
 
 **With modifiers** (Me, Ac)
 

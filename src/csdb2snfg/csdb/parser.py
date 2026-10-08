@@ -115,11 +115,11 @@ def parse_residue(token: str) -> List[ResidueNode]:
 # Stack-based Parser with Repeat
 # =========================
 
-def parse_csdb_linear(code: str) -> Node:
+def parse_csdb_linear(code: str, _pending_ns=None) -> Node:
     code = code.strip()
     i=0; n=len(code)
     stack=[[]]
-    pending_ns = None
+    pending_ns = _pending_ns
 
     while i<n:
         c = code[i]
@@ -141,16 +141,25 @@ def parse_csdb_linear(code: str) -> Node:
                 unit_start = 0
             unit_str = code[unit_start+1:i]  # 只取重复单元字符串
 
-            # 解析重复单元
-            unit_node = parse_csdb_linear(unit_str)
-
-            # 替换 stack[-1] 中重复单元对应的节点
-            # 假设 stack[-1] 中最后一部分正好对应 unit_node 的长度
-            # 这里为了保险，可以直接删除 stack[-1] 中最后 len(unit_node.children()) 个节点
-            if isinstance(unit_node, ChainNode):
-                n_remove = len(unit_node.children())
+            # 预估要移除的节点数（用于保存 NonStoichiometric）
+            pre_unit_node = parse_csdb_linear(unit_str)
+            if isinstance(pre_unit_node, ChainNode):
+                n_remove = len(pre_unit_node.children())
             else:
                 n_remove = 1
+
+            # 从待移除节点中保存 NonStoichiometric（如 -6) 前缀）
+            removed = stack[-1][-n_remove:] if n_remove <= len(stack[-1]) else []
+            saved_ns = None
+            for rn in removed:
+                if hasattr(rn, 'non_stoichiometric') and rn.non_stoichiometric is not None:
+                    saved_ns = rn.non_stoichiometric
+                    break
+
+            # 重新解析重复单元（传入 saved_ns 以保留 -6) 等前缀）
+            unit_node = parse_csdb_linear(unit_str, _pending_ns=saved_ns)
+
+            # 替换 stack[-1] 中重复单元对应的节点
             stack[-1] = stack[-1][:-n_remove] + [RepeatNode(unit_node, count)]
 
             # 移动指针
@@ -203,7 +212,9 @@ def parse_csdb_linear(code: str) -> Node:
                 i += sum(len(r.raw) for r in residues)
             else:
                 i += 1
-    return ChainNode(stack[0]) if len(stack[0])>1 else stack[0][0] if stack[0] else None
+    # 统一返回 ChainNode：下游（expand_repeat/layout_tree 等）按 to_dict() 列表
+    # 迭代；单残基/单 Branch/单 Repeat 时返回裸节点会让迭代落到 dict 的键上
+    return ChainNode(stack[0]) if stack[0] else None
 
 # =========================
 # AST Printer

@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from csdb2snfg.parser import parse_csdb_linear
-from csdb2snfg.renderer import draw_snfg
+from csdb2snfg.csdb.parser import parse_csdb_linear
+from csdb2snfg.export.image import draw_snfg
 
 EXAMPLES = {
     "simple_linear": (

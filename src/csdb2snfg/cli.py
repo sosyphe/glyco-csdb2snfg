@@ -113,6 +113,10 @@ def _add_render_args(parser):
         "--no-legend", action="store_true",
         help="Do not draw the monosaccharide legend",
     )
+    parser.add_argument(
+        "--compact-repeat", action="store_true",
+        help="Show repeat units as [unit]n instead of expanding",
+    )
 
 
 def _get_csdb_strings(args):
@@ -141,8 +145,8 @@ def cmd_image(args):
     import matplotlib
     matplotlib.use("Agg")
 
-    from csdb2snfg.parser import parse_csdb_linear
-    from csdb2snfg.renderer import draw_snfg
+    from csdb2snfg.csdb.parser import parse_csdb_linear
+    from csdb2snfg.export.image import draw_snfg
 
     strings = _get_csdb_strings(args)
     os.makedirs(args.output, exist_ok=True)
@@ -169,6 +173,7 @@ def cmd_image(args):
                     font_family=args.font_family,
                     save_svg=path,
                     add_legend=not args.no_legend,
+                    compact_repeat=args.compact_repeat,
                 )
             else:
                 path = os.path.join(args.output, f"{base}.png")
@@ -179,6 +184,7 @@ def cmd_image(args):
                     font_size=args.font_size,
                     font_family=args.font_family,
                     add_legend=not args.no_legend,
+                    compact_repeat=args.compact_repeat,
                 )
                 fig.savefig(path, dpi=args.dpi, bbox_inches="tight")
                 import matplotlib.pyplot as plt
@@ -192,7 +198,7 @@ def cmd_image(args):
 
 def cmd_pptx(args):
     """Export SNFG diagrams to PowerPoint."""
-    from csdb2snfg.pptx_export import generate_snfg_pptx
+    from csdb2snfg.export.pptx import generate_snfg_pptx
 
     strings = _get_csdb_strings(args)
     os.makedirs(args.output, exist_ok=True)
@@ -203,6 +209,7 @@ def cmd_pptx(args):
         ratio=args.ratio,
         font_size=args.font_size,
         font_family=args.font_family,
+        compact_repeat=args.compact_repeat,
     )
 
     if len(strings) == 1:
@@ -219,7 +226,7 @@ def cmd_pptx(args):
 
 def cmd_parse(args):
     """Parse CSDB strings and output JSON AST."""
-    from csdb2snfg.parser import parse_csdb_linear
+    from csdb2snfg.csdb.parser import parse_csdb_linear
 
     strings = _get_csdb_strings(args)
 
