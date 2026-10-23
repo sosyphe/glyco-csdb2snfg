@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "glyco-csdb2snfg"
-version = "0.2.0"
+version = "0.3.0"
 description = "Convert CSDB linear notation to SNFG glycan diagrams"
 readme = "README.md"
 license = {file = "LICENSE"}
@@ -46,3 +46,24 @@ Issues = "https://github.com/sosyphe/glyco-csdb2snfg/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+# Package-scoped ruff configuration: nearest-ancestor discovery means only
+# files under packages/glyco-csdb2snfg are affected; sibling workspace members
+# stay on their own (or ruff's default) configuration. Run via
+#   uvx ruff format packages/glyco-csdb2snfg
+#   uvx ruff check --fix packages/glyco-csdb2snfg
+# so no ruff dependency or uv.lock change is needed.
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+src = ["src"]
+
+[tool.ruff.lint]
+# Conservative set: pycodestyle defaults (E4/E7/E9) + warnings, pyflakes,
+# isort and bugbear. No UP (would churn typing.List-style annotations across
+# the py3.9-supported code for zero value), no N/C90/SIM/RUF.
+select = ["E4", "E7", "E9", "F", "W", "I", "B"]
+ignore = ["E731"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["csdb2snfg"]

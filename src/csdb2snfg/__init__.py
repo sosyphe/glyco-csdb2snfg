@@ -1,11 +1,18 @@
 """csdb2snfg - Convert CSDB linear notation to SNFG glycan diagrams."""
 
-__version__ = "0.2.0"
+# Keep in sync with [project].version in pyproject.toml (a dynamic
+# importlib.metadata lookup was rejected: it would run a dist-info scan at
+# import time and defeat the PEP 562 lazy-import design below).
+__version__ = "0.3.0"
 
 __all__ = [
     "__version__",
     "parse_csdb_linear",
     "print_ast",
+    "split_fuzzy_options",
+    "split_fuzzy_variants",
+    "expand_fuzzy",
+    "expand_fuzzy_tracked",
     "draw_snfg",
     "layout_tree",
     "expand_repeat",
@@ -21,13 +28,21 @@ __all__ = [
     "RepeatNode",
     "LinkageNode",
     "ResidueNode",
+    "Style",
+    "PRESETS",
+    "load_style",
 ]
 
-# 惰性 re-export（PEP 562）：import csdb2snfg 不拉起 matplotlib / python-pptx /
-# numpy 等重依赖，首次属性访问时才导入对应模块并缓存到 globals()。
+# Lazy re-export (PEP 562): importing csdb2snfg does not pull in heavy
+# dependencies like matplotlib / python-pptx / numpy; the corresponding module
+# is imported on first attribute access and cached in globals().
 _LAZY_ATTRS = {
     "parse_csdb_linear": "csdb2snfg.csdb.parser",
     "print_ast": "csdb2snfg.csdb.parser",
+    "split_fuzzy_options": "csdb2snfg.csdb.fuzzy",
+    "split_fuzzy_variants": "csdb2snfg.csdb.fuzzy",
+    "expand_fuzzy": "csdb2snfg.csdb.fuzzy",
+    "expand_fuzzy_tracked": "csdb2snfg.csdb.fuzzy",
     "Node": "csdb2snfg.csdb.parser",
     "ChainNode": "csdb2snfg.csdb.parser",
     "BranchNode": "csdb2snfg.csdb.parser",
@@ -43,20 +58,25 @@ _LAZY_ATTRS = {
     "expand_repeat_compact": "csdb2snfg.snfg.layout",
     "draw_snfg": "csdb2snfg.export.image",
     "generate_snfg_pptx": "csdb2snfg.export.pptx",
+    "Style": "csdb2snfg.snfg.style",
+    "PRESETS": "csdb2snfg.snfg.style",
+    "load_style": "csdb2snfg.snfg.style",
 }
 
 
 def __getattr__(name):
+    """PEP 562 lazy attribute access: import the owning module on first use."""
     try:
         module_name = _LAZY_ATTRS[name]
     except KeyError:
-        raise AttributeError(
-            f"module 'csdb2snfg' has no attribute {name!r}") from None
+        raise AttributeError(f"module 'csdb2snfg' has no attribute {name!r}") from None
     import importlib
+
     value = getattr(importlib.import_module(module_name), name)
-    globals()[name] = value  # 缓存，二次访问零开销
+    globals()[name] = value  # cache; subsequent accesses cost nothing
     return value
 
 
 def __dir__():
+    """Expose only the public API in dir()/completion (lazy attrs included)."""
     return sorted(__all__)
