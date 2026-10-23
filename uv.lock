@@ -1035,7 +1035,7 @@ wheels = [
 
 [[package]]
 name = "glyco-csdb2snfg"
-version = "0.2.0"
+version = "0.3.0"
 source = { editable = "." }
 dependencies = [
     { name = "matplotlib", version = "3.9.4", source = { registry = "https://mirrors.aliyun.com/pypi/simple/" }, marker = "python_full_version < '3.10'" },

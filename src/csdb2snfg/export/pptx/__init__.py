@@ -1,4 +1,4 @@
-"""python-pptx 导出后端（CLI 子命令 pptx）。"""
+"""python-pptx export backend (CLI subcommand `pptx`)."""
 
 from csdb2snfg.export.pptx.render import generate_snfg_pptx
 
